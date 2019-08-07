@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" charset="utf-8" />
+
+        <!-- style sheet for default theme(flat azure) -->
+
+        <link href="http://cdn.syncfusion.com/16.3.0.29/js/web/flat-azure/ej.web.all.min.css"
+              rel="stylesheet" />
+
+        <!--scripts-->
+
+        <script src="http://cdn.syncfusion.com/js/assets/external/jquery-1.11.3.min.js"></script>
+
+        <script src="http://cdn.syncfusion.com/js/assets/external/jquery.easing.1.3.min.js"></script>
+
+        <script src="http://cdn.syncfusion.com/16.3.0.29/js/web/ej.web.all.min.js"></script>
+<style>
+* {
+    box-sizing: border-box;
+}
+
+input[type=text], select, textarea {
+    width: 80%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+label {
+    padding: 12px 12px 12px 0;
+    display: inline-block;
+}
+
+input[type=submit] {
+    background-color: #4CAF50;
+    vertical-align:middle;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    float: right;
+    margin: 0 50%; 
+    margin-top: 12px;
+}
+
+input[type=submit]:hover {
+    background-color: #45a049;
+}
+
+.container {
+    border-radius: 5px;
+    background-color: #f2f2f2;
+    padding: 20px;
+    width: 80%;
+    margin: 0 auto;
+}
+
+.modal-content { 
+	background-color: #fefefe; 
+	margin: 5% auto 15% auto; 
+	border: 1px solid #888; 
+	width: 60%; 
+}
+
+.modal { 
+	position: fixed; 
+	z-index: 1;  
+	left: 0; 
+	top: 0; 
+	width: 100%;  
+	height: 100%;  
+	overflow: auto; 
+	background-color: #474e5d; 
+	padding-top: 50px; 
+}  
+
+.col-25 {
+    float: left;
+    width: 25%;
+    margin-top: 6px;
+}
+
+.col-75 {
+    float: left;
+    width: 75%;
+    margin-top: 6px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 600px) {
+    .col-25, .col-75, input[type=submit] {
+        width: 100%;
+        margin-top: 0;
+    }
+}
+</style>
+</head>
+<body id="body">
+<div class="modal" style="text-align:center">
+<h1 align="center" style="color:white;"> CApp </h1>
+<h2 align="center" style="color:white;">New Post</h2>
+<div class="container">
+  <!-- <form action="create_post"> -->
+    <div class="row">
+      <div class="col-25">
+        <label for="subject">Subject</label>
+      </div>
+      <div class="col-75">
+        <input type="text" id="subject" name="nsubject" maxlength="30" placeholder="Enter Subject.." required>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-25">
+        <label for="text">Text</label>
+      </div>
+      <div class="col-75">
+        <textarea id="text" name="ntext" maxlength="1024" placeholder="Write something.." style="height:200px" required></textarea>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-25">
+        <label for="tag">Tag</label>
+      </div>
+      
+      <div class="col-75">
+      <input type="text" id="dropdown1" />
+      </div>
+      
+    </div>
+    
+    <div class="row" >
+    
+      <input type="submit" value="Submit" onclick=add_post()>
+      <div id="error" ></div>
+    </div>
+  <!--  </form>-->
+</div>
+</div>
+ <script>
+ function goBack() {
+	    window.history.back();
+	}
+ function add_post()
+ {
+	 var subject = document.getElementById("subject").value; 
+	 console.log(subject);
+	 var dropdown1 = document.getElementById("dropdown1").value;
+	 console.log(dropdown1);
+	 var text = document.getElementById("text").value;
+	 console.log(text);
+	 
+	 var xhttp = new XMLHttpRequest();
+	 	xhttp.onreadystatechange = function() {
+	 		if (this.readyState == 4 && this.status == 200) {
+	 			console.log(this.responseText);
+	 			var status=JSON.parse(this.responseText);
+	 			var post_id=status.data[0].post_id;
+	 			console.log(post_id);
+	 			
+	 			if(post_id>0){
+	 				console.log("yes");
+	 				var xhttp1 = new XMLHttpRequest();
+	 			 	xhttp1.onreadystatechange = function() {
+	 			 		if (this.readyState == 4 && this.status == 200) {
+	 			 			console.log(this.responseText);
+	 			 			var status=JSON.parse(this.responseText);
+	 			 			var check=status.status;
+	 			 			Str="";
+	 			 			Str+="<html><body>"
+	 			 			if(check==false){
+	 			 				Str+="<H1 align=\"center\"> Complaint not created successfully </H1>"
+	 			 			}
+	 			 			else{
+	 			 				document.location.href="Home";
+	 			 			}
+	 			 			Str+="</body></html>"
+	 			 			document.getElementById("body").innerHTML=Str; 
+	 			 		}
+	 			 	}
+	 			 	xhttp1.open("GET", "add_tag?post_id="+post_id+"&dropdown1="+dropdown1,true);
+	 			 	xhttp1.send();
+	 			 	
+	 			}
+	 			else
+	 				{
+	 				document.getElementById("error").innerHTML="Complaint is not created!"; 
+	 				}
+	 		 	
+	 		}
+	 	}
+	 	xhttp.open("GET", "create_post?subject="+subject+"&text="+text
+	 			+"&dropdown1="+dropdown1, true);        
+	 	xhttp.send();
+ };
+
+			$(function() { 
+			
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+					if (this.readyState == 4 && this.status == 200) {
+						var availableTags=JSON.parse(this.responseText);
+						
+						items =$.map(availableTags.data, function(item) {
+					 		
+				 	    	  return {
+				 	    		   text:item.sub_category,
+				 	    		   value:item.sub_category,
+				 	    		   }
+				 		   
+				 	       });
+						console.log(items);
+						$('#dropdown1').ejDropDownList({
+				            width: 350,
+				            dataSource: items,
+				            fields: {
+				                text: "text",
+				                value: "value"
+				            },
+				            showCheckbox: true,
+				            multiSelectMode: ej.MultiSelectMode.VisualMode
+				        });
+					}
+				};
+				xhttp.open("GET", "show_subcat", true);
+				xhttp.send();
+				
+        
+            
+            
+        
+    });
+        </script>
+</body>
+</html>
